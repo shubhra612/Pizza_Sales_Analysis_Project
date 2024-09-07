@@ -1,0 +1,77 @@
+create database pizza;
+use pizza;
+select * from pizzadata;
+
+-- Total revenue
+select sum(total_price) as total_revenue from pizzadata;
+
+-- Average order value
+select (sum(total_price)/count(distinct order_id)) as avg_order_value from pizzadata; 
+
+-- Total pizzas sold
+select sum(quantity) from pizzadata;
+
+-- Total orders
+select count(distinct order_id) as Total_orders from pizzadata;
+
+-- Average pizzas per order
+select cast(sum(quantity)/count(distinct(order_id)) as decimal (10,2)) as average_pizzas_order from pizzadata;
+
+
+-- daily trends for orders
+
+SELECT DAYNAME(STR_TO_DATE(order_date, '%Y-%m-%d')) AS order_days, 
+       COUNT(DISTINCT (order_id)) AS total_orders 
+FROM pizzadata
+GROUP BY order_days;
+  
+-- Monthly Trends for Total orders
+
+select monthname(STR_TO_DATE(order_date, '%Y-%m-%d')) as Months,
+count(distinct(order_id)) as Total_orders
+from pizzadata
+group by Months
+order by Total_orders desc;
+
+
+-- Category wise pizza sales
+
+select distinct(pizza_category),
+sum(total_price),
+ sum(total_price)*100/(select sum(total_price) from pizzadata)as PCT
+ from pizzadata
+ group by pizza_category;
+ 
+-- Size wise pizza sales
+
+select * from pizzadata;
+
+select distinct(pizza_size),
+cast(sum(total_price)as decimal(10,2)) as Total_sales,
+cast(sum(total_price)*100 /(select sum(total_price) from pizzadata)as decimal(10,2)) as PCT 
+from pizzadata
+group by pizza_size;
+
+-- Top 5 best pizzas as per revenues
+
+select  pizza_name,sum(total_price) as Total_revenue from pizzadata group by pizza_name order by total_revenue desc limit 5;
+
+-- Bottom 5 pizzas as per revenues
+
+select  pizza_name,sum(total_price) as Total_revenue from pizzadata group by pizza_name order by total_revenue  limit 5;
+
+-- Top 5 best pizzas as per quantity
+
+select pizza_name,sum(quantity) as Total_quantity from pizzadata group by pizza_name order by Total_quantity desc  limit 5;
+
+-- Bottom 5 best pizzas as per quantity
+
+select pizza_name,sum(quantity) as Total_quantity from pizzadata group by pizza_name order by Total_quantity   limit 5;
+
+-- Top 5 pizza as per order
+
+select pizza_name,count(distinct(order_id)) as Total_order_id from pizzadata group by pizza_name order by Total_order_id desc limit 5 ;
+
+-- Bottom 5 pizza as per order
+
+select pizza_name,count(distinct(order_id)) as Total_order_id from pizzadata group by pizza_name order by Total_order_id  limit 5 ;
